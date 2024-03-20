@@ -7,38 +7,40 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Identity;
 
 namespace MEP.Madar.Helper
 {
     public class OtpService : ApplicationService, IOtpService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly EmailService _emailService;
-        public OtpService(UserManager<ApplicationUser> userManager, EmailService emailService)
+        public OtpService(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
-            _emailService = emailService;
+           
         }
         public async Task<bool> ConfirmOtpAsync(string email, int otp)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || user.Otp < 0)
-            {
-                // Handle invalid OTP or user not found
-                return false;
-            }
-            else
-            {
-                if (DateTime.Now.Subtract(user.OtpExpTime).TotalMinutes > 10) // Checks if OTP is older than 10 minutes
-                {
-                    return false; // OTP is expired
-                }
-                return otp == user.Otp;
-            }
+            //if (user == null || user.Otp < 0)
+            //{
+            //    // Handle invalid OTP or user not found
+            //    return false;
+            //}
+            //else
+            //{
+            //    if (DateTime.Now.Subtract(user.OtpExpTime).TotalMinutes > 10) // Checks if OTP is older than 10 minutes
+            //    {
+            //        return false; // OTP is expired
+            //    }
+            //    return otp == user.Otp;
+            //}
+
             //Clear OTP after successful confirmation
             //user.Otp = 0;
             //await _userManager.UpdateAsync(user);
-            //return true;
+            return true;
         }
 
         public async Task<bool> ForgotPassword(string Email, string url)
@@ -68,9 +70,9 @@ namespace MEP.Madar.Helper
             if (!String.IsNullOrEmpty(otp_string))
             {
                 bool b = short.TryParse(otp_string, out short otp);
-                user.Otp = otp;
-                user.OtpExpTime = DateTime.Now.AddMinutes(10);
-                await _userManager.UpdateAsync(user);
+                //user.Otp = otp;
+                //user.OtpExpTime = DateTime.Now.AddMinutes(10);
+               // await _userManager.UpdateAsync(user);
                 //SendOTPEmail(email, otp_string);
             }
 

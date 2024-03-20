@@ -1,5 +1,4 @@
-﻿using MEP.Madar.WeatherForecast.Dto;
-using MEP.Madar.WeatherForecast;
+﻿using MEP.Madar.WeatherForecast;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
