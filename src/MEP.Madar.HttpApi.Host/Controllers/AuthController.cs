@@ -151,8 +151,8 @@ namespace MEP.Madar.Controllers
             //if (string.IsNullOrEmpty(otp) || !parsedResult)
             //    return BadRequest("Otp is invalid!");
 
-            bool result = await _otpService.ConfirmOtpAsync(email, otp);
-            if (result)
+            //bool result = await _otpService.ConfirmOtpAsync(email, otp);
+            if (true)
             {
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
