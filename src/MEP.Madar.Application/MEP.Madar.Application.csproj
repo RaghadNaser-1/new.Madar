@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MEP.Madar.Domain\MEP.Madar.Domain.csproj" />
     <ProjectReference Include="..\MEP.Madar.Application.Contracts\MEP.Madar.Application.Contracts.csproj" />
+    <ProjectReference Include="..\MEP.Madar.EntityFrameworkCore\MEP.Madar.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

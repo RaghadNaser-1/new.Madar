@@ -147,11 +147,11 @@ namespace MEP.Madar.Controllers
             if (string.IsNullOrEmpty(email))
                 return BadRequest("email is required!");
 
-            bool parsedResult = short.TryParse(otp, out short Otp);
-            if (string.IsNullOrEmpty(otp) || !parsedResult)
-                return BadRequest("Otp is invalid!");
+            //bool parsedResult = short.TryParse(otp, out short Otp);
+            //if (string.IsNullOrEmpty(otp) || !parsedResult)
+            //    return BadRequest("Otp is invalid!");
 
-            bool result = await _otpService.ConfirmOtpAsync(email, Otp);
+            bool result = await _otpService.ConfirmOtpAsync(email, otp);
             if (result)
             {
                 var user = await _userManager.FindByEmailAsync(email);

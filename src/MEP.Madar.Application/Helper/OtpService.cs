@@ -1,4 +1,5 @@
 ﻿using MEP.Madar.Models.Auth;
+using MEP.Madar.TheOtp;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 
 namespace MEP.Madar.Helper
@@ -14,15 +16,42 @@ namespace MEP.Madar.Helper
     public class OtpService : ApplicationService, IOtpService
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly EmailService _emailService;
-        public OtpService(UserManager<IdentityUser> userManager)
+        //private readonly EmailService _emailService;
+        //private readonly IOtpRepository _otpRepository; // Assuming IOtpRepository is the repository interface for the Otp entity
+        private readonly IRepository<Otp> otpRepository;
+        //public OtpService(UserManager<IdentityUser> userManager, IOtpRepository otpRepository)
+        public OtpService(UserManager<IdentityUser> userManager, IRepository<Otp> repository)
         {
             _userManager = userManager;
-           
+            otpRepository = repository;
+            
+
+
         }
-        public async Task<bool> ConfirmOtpAsync(string email, int otp)
+        
+        public async Task<bool> ConfirmOtpAsync(string email, string otpString)
         {
             var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) { return false; }
+            var otpRecord = await otpRepository.FirstOrDefaultAsync(otp => otp.AbpUserId == user.Id);
+            if (otpRecord == null)
+            {
+                return false; // OTP record not found
+            }
+            // Verify that the OTP matches the one provided by the user
+            if (otpRecord.UserOtp.ToString() != otpString)
+            {
+                return false; // OTP mismatch
+            }
+
+            // Check if the OTP has expired
+            if (otpRecord.OtpExpTime < DateTime.Now)
+            {
+                return false; // OTP expired
+            }
+
+            // OTP is valid and not expired
+            return true;
             //if (user == null || user.Otp < 0)
             //{
             //    // Handle invalid OTP or user not found
@@ -40,7 +69,7 @@ namespace MEP.Madar.Helper
             //Clear OTP after successful confirmation
             //user.Otp = 0;
             //await _userManager.UpdateAsync(user);
-            return true;
+            //return true;
         }
 
         public async Task<bool> ForgotPassword(string Email, string url)
@@ -69,11 +98,20 @@ namespace MEP.Madar.Helper
             var otp_string = GenerateOtp();
             if (!String.IsNullOrEmpty(otp_string))
             {
-                bool b = short.TryParse(otp_string, out short otp);
+                bool b = int.TryParse(otp_string, out int otp);
                 //user.Otp = otp;
                 //user.OtpExpTime = DateTime.Now.AddMinutes(10);
-               // await _userManager.UpdateAsync(user);
+                // await _userManager.UpdateAsync(user);
                 //SendOTPEmail(email, otp_string);
+
+                var otpEntity = new Otp
+                {
+                    AbpUserId = user.Id,
+                    UserOtp = otp,
+                    OtpExpTime = DateTime.Now.AddMinutes(10) // Assuming OTP expires after 10 minutes
+                };
+                await otpRepository.InsertAsync(otpEntity);
+
             }
 
             return otp_string;

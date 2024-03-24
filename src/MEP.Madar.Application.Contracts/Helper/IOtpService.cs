@@ -9,7 +9,7 @@ namespace MEP.Madar.Helper
     public interface IOtpService : IApplicationService
     {
         Task<string> GenerateAndSendOtpAsync(string email);
-        Task<bool> ConfirmOtpAsync(string email, int otp);
+        Task<bool> ConfirmOtpAsync(string email, string otpString);
         Task<bool> ForgotPassword(string Email, string url);
     }
 }

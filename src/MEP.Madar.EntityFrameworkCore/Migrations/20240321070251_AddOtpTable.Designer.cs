@@ -4,6 +4,7 @@ using MEP.Madar.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace MEP.Madar.Migrations
 {
     [DbContext(typeof(MadarDbContext))]
-    partial class MadarDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240321070251_AddOtpTable")]
+    partial class AddOtpTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,12 +41,17 @@ namespace MEP.Madar.Migrations
                     b.Property<DateTime>("OtpExpTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("UserOtp")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AbpUserId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("AppOtps", (string)null);
                 });
@@ -1792,6 +1800,12 @@ namespace MEP.Madar.Migrations
                         .WithMany()
                         .HasForeignKey("AbpUserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Volo.Abp.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AbpUser");

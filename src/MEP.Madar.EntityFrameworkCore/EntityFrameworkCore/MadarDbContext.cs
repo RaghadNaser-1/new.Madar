@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MEP.Madar.TheOtp;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
@@ -24,6 +26,7 @@ public class MadarDbContext :
     ITenantManagementDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
+    public DbSet<Otp> Otps { get; set; }
 
     #region Entities from the modules
 
@@ -82,5 +85,19 @@ public class MadarDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
-    }
+
+        builder.Entity<Otp>(b =>
+        {
+            b.ToTable(MadarConsts.DbTablePrefix + "Otps",
+                MadarConsts.DbSchema);
+            b.ConfigureByConvention(); //auto configure for the base class props
+
+            //b.HasOne<IdentityUser>() 
+            //    .WithMany()
+            //    .HasForeignKey(o => o.AbpUserId)
+            //    .OnDelete(DeleteBehavior.Restrict); // Adjust cascade delete behavior
+
+        });
+    
+}
 }
